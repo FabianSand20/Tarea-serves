@@ -16,8 +16,8 @@ const server = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end(htmlFile);
     });
-  } else if (url === '/ejemplo') {
-    fs.readFile('../html/about.html', 'utf8', (err, ejemploFile) => {
+  } else if (url === '/about.html') {
+    fs.readFile('../html/about.html', 'utf8', (err, aboutFile) => {
       if (err) {
         res.statusCode = 500;
         res.end('Error interno del servidor');
@@ -26,10 +26,10 @@ const server = http.createServer((req, res) => {
 
       res.setHeader('Content-Type', 'text/html');
       res.statusCode = 200;
-      res.end(ejemploFile);
+      res.end(aboutFile);
     });
-  } else if (url === '/otro-ejemplo') {
-    fs.readFile('../html/contact.html', 'utf8', (err, otroEjemploFile) => {
+  } else if (url === '/contact.html') {
+    fs.readFile('../html/contact.html', 'utf8', (err, contactFile) => {
       if (err) {
         res.statusCode = 500;
         res.end('Error interno del servidor');
