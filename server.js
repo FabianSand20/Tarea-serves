@@ -1,57 +1,37 @@
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 
 const server = http.createServer((req, res) => {
   const url = req.url;
+  let filePath;
 
-  if (url === '/ruta-especifica' || url === "/") {
-    fs.readFile('index.html', 'utf8', (err, htmlFile) => {
-      if (err) {
-        res.statusCode = 500;
-        res.end('Error interno del servidor');
-        return;
-      }
-
-      res.setHeader('Content-Type', 'text/html');
-      res.statusCode = 200;
-      res.end(htmlFile);
-    });
+  if (url === '/' || url === '/index.html') {
+    filePath = path.join(__dirname, 'index.html');
   } else if (url === '/about.html') {
-    fs.readFile('../html/about.html', 'utf8', (err, aboutFile) => {
-      if (err) {
-        res.statusCode = 500;
-        res.end('Error interno del servidor');
-        return;
-      }
-
-      res.setHeader('Content-Type', 'text/html');
-      res.statusCode = 200;
-      res.end(aboutFile);
-    });
+    filePath = path.join(__dirname, 'about.html');
   } else if (url === '/contact.html') {
-    fs.readFile('../html/contact.html', 'utf8', (err, contactFile) => {
-      if (err) {
-        res.statusCode = 500;
-        res.end('Error interno del servidor');
-        return;
-      }
-
-      res.setHeader('Content-Type', 'text/html');
-      res.statusCode = 200;
-      res.end(otroEjemploFile);
-    });
+    filePath = path.join(__dirname, 'contact.html');
   } else {
-    fs.readFile('noEncontrada.html', 'utf8', (err, noEncontradaHtmlFile) => {
-      if (err) {
-        res.statusCode = 500;
-        res.end('Error interno del servidor');
-        return;
-      }
-
-      res.statusCode = 404;
-      res.end(noEncontradaHtmlFile);
-    });
+    filePath = path.join(__dirname, '404.html');
   }
+
+  fs.readFile(filePath, 'utf8', (err, fileContent) => {
+    if (err) {
+      res.statusCode = 500;
+      res.end('Error interno del servidor');
+      return;
+    }
+
+    let contentType = 'text/html';
+    if (filePath.endsWith('.css')) {
+      contentType = 'text/css';
+    }
+
+    res.setHeader('Content-Type', contentType);
+    res.statusCode = 200;
+    res.end(fileContent);
+  });
 });
 
 const port = 3000;
