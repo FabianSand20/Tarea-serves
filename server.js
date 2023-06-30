@@ -2,36 +2,27 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+const fileMap = {
+  '/': 'index.html',
+  '/index.html': 'index.html',
+  '/about.html': 'about.html',
+  '/contact.html': 'contact.html'
+};
+
 const server = http.createServer((req, res) => {
   const url = req.url;
-  let filePath;
+  const filePath = path.join(__dirname, fileMap[url] || '404.html');
 
-  if (url === '/' || url === '/index.html') {
-    filePath = path.join(__dirname, 'index.html');
-  } else if (url === '/about.html') {
-    filePath = path.join(__dirname, 'about.html');
-  } else if (url === '/contact.html') {
-    filePath = path.join(__dirname, 'contact.html');
-  } else {
-    filePath = path.join(__dirname, '404.html');
-  }
+  const contentType = path.extname(filePath) === '.css' ? 'text/css' : 'text/html';
+  res.setHeader('Content-Type', contentType);
 
-  fs.readFile(filePath, 'utf8', (err, fileContent) => {
-    if (err) {
-      res.statusCode = 500;
-      res.end('Error interno del servidor');
-      return;
-    }
-
-    let contentType = 'text/html';
-    if (filePath.endsWith('.css')) {
-      contentType = 'text/css';
-    }
-
-    res.setHeader('Content-Type', contentType);
-    res.statusCode = 200;
-    res.end(fileContent);
+  const stream = fs.createReadStream(filePath);
+  stream.on('error', (err) => {
+    res.statusCode = 500;
+    res.end('Error interno del servidor');
   });
+
+  stream.pipe(res);
 });
 
 const port = 3000;
